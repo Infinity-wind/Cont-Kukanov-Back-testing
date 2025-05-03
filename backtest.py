@@ -122,7 +122,6 @@ def baseline_vwap(snapshots):
 def load_data(path):
     df = pd.read_csv(path)
 
-    # 清理空或无效数据
     df = df.dropna(subset=["ask_px_00", "ask_sz_00"])
     df = df[df["ask_sz_00"] > 0]
     df = df.drop_duplicates(subset=["ts_event", "publisher_id"])
@@ -157,7 +156,6 @@ def get_cumulative_cost_series(strategy_fn, snapshots, *args):
         qty = 0
         cost = 0
 
-        # 调用不同策略函数
         if strategy_fn == run_backtest:
             split, _ = allocate(shares_left, venues, *args)
             for i in range(len(venues)):
@@ -178,7 +176,6 @@ def get_cumulative_cost_series(strategy_fn, snapshots, *args):
             cost = qty * (ask + fee)
             shares_left -= qty
         elif strategy_fn == baseline_twap:
-            # TWAP 每 60 秒执行一次
             ts_list = [snap[0] for snap in snapshots]
             index = snapshots.index(snapshot)
             if index % 60 != 0:
@@ -203,12 +200,9 @@ def get_cumulative_cost_series(strategy_fn, snapshots, *args):
 if __name__ == "__main__":
     snapshots, df = load_data("l1_day.csv")
 
-    # 参数搜索
+    # grid research
     param_grid = [
         (λo, λu, θ)
-        # λo ∈ [0, 0.1, 0.5, 1, 2]
-        # λu ∈ [0, 0.1, 0.5, 1, 2]
-        # θ  ∈ [0.0, 0.01, 0.1, 0.2]
         for λo in [0, 0.1, 0.5, 1, 2]
         for λu in [0, 0.1, 0.5, 1, 2]
         for θ in [0, 0.01, 0.1, 0.2]
@@ -233,23 +227,6 @@ if __name__ == "__main__":
     twap_total, twap_avg = baseline_twap(snapshots, df)
     vwap_total, vwap_avg = baseline_vwap(snapshots)
 
-    # output JSON
-    # result = {
-    #     "best_params": best_params,
-    #     "tuned_total_spent": best_cost,
-    #     "tuned_avg_price": best_avg_price,
-
-    #     "best_ask_total": best_ask_total,
-    #     "best_ask_avg": best_ask_avg,
-    #     "twap_total": twap_total,
-    #     "twap_avg": twap_avg,
-    #     "vwap_total": vwap_total,
-    #     "vwap_avg": vwap_avg,
-
-    #     "savings_vs_best_ask_bps": round(10000 * (best_ask_avg - best_avg_price) / best_ask_avg, 2),
-    #     "savings_vs_twap_bps": round(10000 * (twap_avg - best_avg_price) / twap_avg, 2),
-    #     "savings_vs_vwap_bps": round(10000 * (vwap_avg - best_avg_price) / vwap_avg, 2)
-    # }
 
     result = {
         "best_parameters": best_params,
@@ -280,15 +257,11 @@ if __name__ == "__main__":
     
     print(json.dumps(result, indent=2))
 
-
-
 tuned_curve = get_cumulative_cost_series(run_backtest, snapshots, *best_params.values())
 best_ask_curve = get_cumulative_cost_series(baseline_best_ask, snapshots)
 twap_curve = get_cumulative_cost_series(baseline_twap, snapshots)
 vwap_curve = get_cumulative_cost_series(baseline_vwap, snapshots)
 
-
-# 绘图
 plt.figure(figsize=(10, 6))
 plt.plot(tuned_curve, label='Tuned SOR', color='red', linewidth=2)
 plt.plot(best_ask_curve, label='Best Ask', color='blue', linestyle='--')
