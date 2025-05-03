@@ -23,7 +23,7 @@ This project implements and back-tests a Smart Order Router (SOR) based on the s
 
 ## Parameter Search
 
-We perform a grid search over:
+I perform a grid search over:
 
 ```
 lambda_over:   [0, 0.1, 0.5, 1, 2]
@@ -48,7 +48,7 @@ The current implementation assumes:
 - Instant execution up to displayed size
 - No queueing or slippage dynamics
 
-**To improve realism**, we suggest introducing:
+**To improve realism**, I suggest introducing:
 - A **queue position model**: penalize orders that arrive late or behind larger resting orders
 - **Simulated delay / latency**: e.g., apply a 1-2 second delay before fills are eligible
 - **Market impact model**: include penalty for large instantaneous fills at thin books
