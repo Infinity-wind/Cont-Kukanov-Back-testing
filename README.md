@@ -62,4 +62,4 @@ Run with:
 python backtest.py
 ```
 
-This prints one summary JSON and optionally saves `results.png` (if plotting is added).
+This prints one summary JSON and optionally saves `results.png`.
