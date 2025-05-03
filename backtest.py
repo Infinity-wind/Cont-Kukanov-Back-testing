@@ -234,23 +234,50 @@ if __name__ == "__main__":
     vwap_total, vwap_avg = baseline_vwap(snapshots)
 
     # output JSON
+    # result = {
+    #     "best_params": best_params,
+    #     "tuned_total_spent": best_cost,
+    #     "tuned_avg_price": best_avg_price,
+
+    #     "best_ask_total": best_ask_total,
+    #     "best_ask_avg": best_ask_avg,
+    #     "twap_total": twap_total,
+    #     "twap_avg": twap_avg,
+    #     "vwap_total": vwap_total,
+    #     "vwap_avg": vwap_avg,
+
+    #     "savings_vs_best_ask_bps": round(10000 * (best_ask_avg - best_avg_price) / best_ask_avg, 2),
+    #     "savings_vs_twap_bps": round(10000 * (twap_avg - best_avg_price) / twap_avg, 2),
+    #     "savings_vs_vwap_bps": round(10000 * (vwap_avg - best_avg_price) / vwap_avg, 2)
+    # }
+
     result = {
-        "best_params": best_params,
-        "tuned_total_spent": best_cost,
-        "tuned_avg_price": best_avg_price,
-
-        "best_ask_total": best_ask_total,
-        "best_ask_avg": best_ask_avg,
-        "twap_total": twap_total,
-        "twap_avg": twap_avg,
-        "vwap_total": vwap_total,
-        "vwap_avg": vwap_avg,
-
-        "savings_vs_best_ask_bps": round(10000 * (best_ask_avg - best_avg_price) / best_ask_avg, 2),
-        "savings_vs_twap_bps": round(10000 * (twap_avg - best_avg_price) / twap_avg, 2),
-        "savings_vs_vwap_bps": round(10000 * (vwap_avg - best_avg_price) / vwap_avg, 2)
+        "best_parameters": best_params,
+        "optimized_result": {
+            "total_cash": round(best_cost, 2),
+            "avg_price": round(best_avg_price, 3)
+        },
+        "baselines": {
+            "best_ask": {
+                "total_cash": round(best_ask_total, 2),
+                "avg_price": round(best_ask_avg, 3)
+            },
+            "twap": {
+                "total_cash": round(twap_total, 2),
+                "avg_price": round(twap_avg, 3)
+            },
+            "vwap": {
+                "total_cash": round(vwap_total, 2),
+                "avg_price": round(vwap_avg, 3)
+            }
+        },
+        "savings_bps": {
+            "vs_best_ask": round(10000 * (best_ask_avg - best_avg_price) / best_ask_avg, 1),
+            "vs_twap": round(10000 * (twap_avg - best_avg_price) / twap_avg, 1),
+            "vs_vwap": round(10000 * (vwap_avg - best_avg_price) / vwap_avg, 1)
+        }
     }
-
+    
     print(json.dumps(result, indent=2))
 
 
